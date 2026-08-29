@@ -1,0 +1,2 @@
+class JavaAdapter:
+    LANGUAGE = "Java"

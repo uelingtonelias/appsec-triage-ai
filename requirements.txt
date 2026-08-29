@@ -1,0 +1,10 @@
+requests
+pandas
+gitpython
+pyyaml
+rich
+pydantic
+numpy
+tree-sitter
+chromadb
+sentence-transformers

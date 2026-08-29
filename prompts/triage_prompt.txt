@@ -1,0 +1,142 @@
+Analyze the following security finding using the repository context.
+
+Language:
+{language}
+
+Framework:
+{framework}
+
+Finding Information
+===================
+
+Rule ID:
+{rule_id}
+
+Severity:
+{severity}
+
+CWE:
+{cwe}
+
+Message:
+{message}
+
+File:
+{file_path}
+
+Start Line:
+{start_line}
+
+End Line:
+{end_line}
+
+Affected Code
+=============
+
+{code_snippet}
+
+Dataflow Information
+====================
+
+Source:
+{source}
+
+Intermediate Flow:
+{dataflow}
+
+Sink:
+{sink}
+
+Repository Context
+==================
+
+{repository_context}
+
+Related Files
+=============
+
+{related_files}
+
+Analysis Tasks
+==============
+
+Perform a security review of this finding and determine:
+
+1. Whether user-controlled input exists.
+2. Whether the source can realistically reach the reported sink.
+3. Whether sanitization or validation controls exist.
+4. Whether framework protections mitigate the issue.
+5. Whether authentication or authorization controls impact exploitability.
+6. Whether the vulnerable code path is realistically reachable.
+7. Whether exploitation is feasible in a real-world attack scenario.
+8. Whether the finding is:
+   - True Positive
+   - Likely True Positive
+   - Needs Review
+   - Likely False Positive
+
+Important Instructions
+======================
+
+- Use evidence from the repository.
+- Consider the full execution path.
+- Consider framework behavior.
+- Consider trust boundaries.
+- Consider dataflow continuity.
+- Consider compensating controls.
+- Do not assume exploitability.
+- Do not assume safety.
+- If evidence is insufficient, choose "Needs Review".
+- Do not modify source code.
+- Provide technical justification for every conclusion.
+
+Output Format
+=============
+
+Return ONLY valid JSON using the following schema:
+
+{{
+  "classification": "Needs Review",
+  "confidence": 0,
+  "risk": "LOW",
+  "reasoning": "",
+  "evidence": [
+    ""
+  ],
+  "developer_recommendation": "",
+  "recommended_code": ""
+}}
+
+Field Definitions
+=================
+
+classification:
+One of:
+- True Positive
+- Likely True Positive
+- Needs Review
+- Likely False Positive
+
+confidence:
+Integer from 0 to 100.
+
+risk:
+One of:
+- LOW
+- MEDIUM
+- HIGH
+- CRITICAL
+
+reasoning:
+Technical explanation of the classification.
+
+evidence:
+List of facts extracted from the repository supporting the conclusion.
+
+developer_recommendation:
+Guidance for the developer.
+
+recommended_code:
+Optional secure implementation example.
+Do not return the entire file.
+Only return the relevant secure code example when applicable.

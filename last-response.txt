@@ -1,0 +1,11 @@
+{
+  "classification": "Needs Review",
+  "confidence": 0,
+  "risk": "LOW",
+  "reasoning": "The finding is a warning about using mutable tags or branch references in GitHub Actions. It does not indicate any user-controlled input, source-to-sink reachability, sanitization, validation, framework protections, authentication, authorization, or dataflow continuity that would make it exploitable.",
+  "evidence": [
+    "The affected code uses `actions/checkout@v2`, which is a mutable tag reference."
+  ],
+  "developer_recommendation": "Pin the reference to a full 40-character commit SHA instead of using a mutable tag or branch reference. This can be done by specifying a specific commit SHA, e.g., `uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608`.",
+  "recommended_code": ""
+}

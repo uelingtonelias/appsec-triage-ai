@@ -1,7 +1,3 @@
-
-SYSTEM INSTRUCTIONS
-===================
-
 You are a Staff Software Engineer specialized in TypeScript and Express, and a Senior Application Security Engineer.
 
 Your task is to determine whether a SAST finding is realistically exploitable in the provided application context.
@@ -222,8 +218,6 @@ Rules:
 FINDING ANALYSIS
 ================
 
-Analyze the following security finding using the repository context.
-
 Language:
 TypeScript
 
@@ -234,30 +228,27 @@ Finding Information
 ===================
 
 Rule ID:
-yaml.github-actions.security.gha-curl-pipe-shell.gha-curl-pipe-shell
+javascript.express.security.audit.xss.pug.explicit-unescape.template-explicit-unescape
 
 Severity:
-ERROR
-
-CWE:
-Unknown
+WARNING
 
 Message:
-A `run:` step pipes the output of `curl` or `wget` directly into a shell interpreter. This is the "curl | bash" install pattern — if the remote server is compromised or the URL is hijacked, an attacker can execute arbitrary code in your CI runner. Consider downloading the file first, verifying its checksum or signature, and then executing it.
+Detected an explicit unescape in a Pug template, using either '!=' or '!{...}'. If external data can reach these locations, your application is exposed to a cross-site scripting (XSS) vulnerability. If you must do this, ensure no external data can reach this location.
 
 File:
-C:\Tools\DevSecOps\juice-shop\.github\workflows\ci.yml
+C:\Tools\DevSecOps\juice-shop\views\promotionVideo.pug
 
 Start Line:
-359
+75
 
 End Line:
-359
+75
 
 Affected Code
 =============
 
-        run: curl https://cli-assets.heroku.com/install.sh | sh
+            if (splitted.length != 2) {
 
 Dataflow Information
 ====================
@@ -274,42 +265,25 @@ Sink:
 Repository Context
 ==================
 
-name: "CI/CD Pipeline"
-on:
-  push:
-    branches-ignore:
-      - l10n_develop
-      - gh-pages
-    paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - 'monitoring/grafana-dashboard.json'
-      - 'screenshots/**'
-    tags-ignore:
-      - '*'
-  pull_request:
-    paths-ignore:
-      - '*.md'
-      - 'LICENSE'
-      - 'data/static/i18n/*.json'
-      - 'frontend/src/assets/i18n/*.json'
-env:
-  NODE_DEFAULT_VERSION: 24
-  NODE_OPTIONS: "--max_old_space_size=4096"
-  CYCLONEDX_NPM_VERSION: '^2.0.0||^3.0.0||^4.0.0'   # keep in sync with package.json
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Check out Git repository"
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
-      - name: "Use Node.js"
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af #v4.1.0
-        with:
-          node-version: ${{ env.NODE_DEFAULT_VERSION }}
-      - name: "Install application minimalistically"
-        run: |
-          npm install --ignore-s
+doctype html
+html(lang='en')
+    head
+        title _title_
+        meta(charset='utf-8')
+        meta(name='description', content='')
+        meta(name='keywords', content='')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        link(rel='icon', type='image/x-icon', href='./assets/public/_favicon_')
+        link(rel='stylesheet', href='/vendor/beercss/beer.min.css')
+        link(rel='stylesheet', href='/vendor/material-icons/material-icons.css')
+        link(rel='stylesheet', href='./assets/public/css/roboto.css', type='text/css')
+        script(type='module', src='/vendor/beercss/beer.min.js')
+        style.
+            body { background: _bgColor_ !important; color: _textColor_ !important; }
+            article { background: _primLight_ !important; }
+            .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: _textColor_; }
+            .brand img { max-height: 50px; width: auto; }
+            .brand span { font: 5
 
 Related Files
 =============
@@ -329,73 +303,10 @@ Perform a security review of this finding and determine:
 6. Whether the vulnerable code path is realistically reachable.
 7. Whether exploitation is feasible in a real-world attack scenario.
 8. Whether the finding is:
+
    - True Positive
    - Likely True Positive
    - Needs Review
    - Likely False Positive
 
-Important Instructions
-======================
-
-- Use evidence from the repository.
-- Consider the full execution path.
-- Consider framework behavior.
-- Consider trust boundaries.
-- Consider dataflow continuity.
-- Consider compensating controls.
-- Do not assume exploitability.
-- Do not assume safety.
-- If evidence is insufficient, choose "Needs Review".
-- Do not modify source code.
-- Provide technical justification for every conclusion.
-
-Output Format
-=============
-
-Return ONLY valid JSON using the following schema:
-
-{{
-  "classification": "Needs Review",
-  "confidence": 0,
-  "risk": "LOW",
-  "reasoning": "",
-  "evidence": [
-    ""
-  ],
-  "developer_recommendation": "",
-  "recommended_code": ""
-}}
-
-Field Definitions
-=================
-
-classification:
-One of:
-- True Positive
-- Likely True Positive
-- Needs Review
-- Likely False Positive
-
-confidence:
-Integer from 0 to 100.
-
-risk:
-One of:
-- LOW
-- MEDIUM
-- HIGH
-- CRITICAL
-
-reasoning:
-Technical explanation of the classification.
-
-evidence:
-List of facts extracted from the repository supporting the conclusion.
-
-developer_recommendation:
-Guidance for the developer.
-
-recommended_code:
-Optional secure implementation example.
-Do not return the entire file.
-Only return the relevant secure code example when applicable.
+Return ONLY valid JSON.

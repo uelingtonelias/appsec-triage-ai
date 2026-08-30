@@ -2,6 +2,7 @@ import argparse
 
 from parsers.semgrep_parser import SemgrepParser
 from agents.triage_agent import TriageAgent
+from tools.triage_ignore import TriageIgnore
 
 
 SEPARATOR = "=" * 60
@@ -29,9 +30,9 @@ def main():
     )
 
     parser.add_argument(
-        "--limit",
+       "--limit",
         type=int,
-        default=10,
+        default=0,
         help="Number of findings to process. Use 0 for all findings."
     )
 
@@ -43,7 +44,56 @@ def main():
         args.report
     )
 
-    if args.limit > 0:
+    print(
+        f"[INFO] Findings loaded: "
+        f"{len(findings)}"
+    )
+
+    ignore = TriageIgnore()
+
+    filtered_findings = []
+
+    ignored_count = 0
+
+    ignored_rules = {}
+
+    for finding in findings:
+
+        if ignore.should_ignore(
+            finding
+        ):
+
+            ignored_count += 1
+
+            ignored_rules[
+                finding.rule_id
+            ] = (
+                ignored_rules.get(
+                    finding.rule_id,
+                    0
+                ) + 1
+            )
+
+            print(
+                f"[INFO] Ignored: "
+                f"{finding.rule_id} | "
+                f"{finding.file_path}"
+            )
+
+            continue
+
+        filtered_findings.append(
+            finding
+        )
+
+    findings = filtered_findings
+
+    print(
+        f"[INFO] Ignored findings: "
+        f"{ignored_count}"
+    )
+
+    if args.limit is not None and args.limit > 0:
         findings = findings[:args.limit]
 
     print(
@@ -130,6 +180,16 @@ def main():
     )
 
     print(
+        f"Findings Loaded    : "
+        f"{len(filtered_findings) + ignored_count}"
+    )
+
+    print(
+        f"Findings Ignored   : "
+        f"{ignored_count}"
+    )
+
+    print(
         f"Findings Processed : "
         f"{processed}"
     )
@@ -206,6 +266,20 @@ def main():
             f"  Avg Time/Token   : "
             f"{total_seconds / total_tokens:.4f}s"
         )
+
+    if ignored_rules:
+
+        print("\nIGNORED RULES")
+
+        for rule, count in sorted(
+            ignored_rules.items(),
+            key=lambda item: item[1],
+            reverse=True
+        ):
+
+            print(
+                f"  {count:<5} {rule}"
+            )
 
     print("\nDONE")
 

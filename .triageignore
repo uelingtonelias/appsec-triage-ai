@@ -1,0 +1,18 @@
+# GitHub Actions
+.github/workflows/*
+
+# Terraform
+*.tf
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Kubernetes
+k8s/*
+manifests/*
+
+# Ignore Semgrep rules
+rule:yaml.github-actions.*
+rule:yaml.kubernetes.*
+rule:yaml.dockerfile.*

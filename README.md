@@ -26,5 +26,4 @@ AI-powered Application Security Triage Agent.
 ## Usage
 
 python main.py \
-  --report semgrep.json \
-  --repo ./repository
+  --report semgrep.json --repo ./repository --limit 10

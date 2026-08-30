@@ -5,6 +5,7 @@ from llm.prompt_builder import PromptBuilder
 from models.repository_context import RepositoryContext
 from tools.file_reader import FileReader
 from tools.technology_detector import TechnologyDetector
+from tools.context_builder import ContextBuilder
 
 
 class TriageAgent:
@@ -61,7 +62,7 @@ class TriageAgent:
             finding
         )
         print(
-            f"[INFO] Rule: {finding.rule_id}"
+            f"[INFO] Rule: {finding.scanner_rule_id}"
         )
         print(
             f"[INFO] File: {finding.file_path}"

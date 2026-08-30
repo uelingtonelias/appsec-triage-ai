@@ -28,7 +28,7 @@ class TriageIgnore:
             finding.file_path or ""
         ).replace("\\", "/")
         rule_id = (
-            finding.rule_id or ""
+            finding.scanner_rule_id or ""
         )
         for pattern in self.patterns:
             if pattern.startswith(

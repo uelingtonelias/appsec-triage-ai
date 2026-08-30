@@ -228,62 +228,45 @@ Finding Information
 ===================
 
 Rule ID:
-javascript.express.security.audit.xss.pug.explicit-unescape.template-explicit-unescape
+package_managers.npm.npm-missing-minimum-release-age.npm-missing-minimum-release-age
 
 Severity:
-WARNING
+MEDIUM
 
 Message:
-Detected an explicit unescape in a Pug template, using either '!=' or '!{...}'. If external data can reach these locations, your application is exposed to a cross-site scripting (XSS) vulnerability. If you must do this, ensure no external data can reach this location.
+This .npmrc does not set a minimum release age or sets it too low. Newly published packages can be malicious or unstable. Add `min-release-age = 7` to wait 7 days before resolving newly published package versions. Added in: v11.10 Reference: https://github.blog/changelog/2026-02-18-npm-bulk-trusted-publishing-config-and-script-security-now-generally-available/
 
 File:
-C:\Tools\DevSecOps\juice-shop\views\promotionVideo.pug
+C:\Tools\DevSecOps\juice-shop\.npmrc
 
 Start Line:
-75
+1
 
 End Line:
-75
+1
 
 Affected Code
 =============
 
-            if (splitted.length != 2) {
+package-lock=false
 
 Dataflow Information
 ====================
 
 Source:
-
+None
 
 Intermediate Flow:
-
+[]
 
 Sink:
-
+None
 
 Repository Context
 ==================
 
-doctype html
-html(lang='en')
-    head
-        title _title_
-        meta(charset='utf-8')
-        meta(name='description', content='')
-        meta(name='keywords', content='')
-        meta(name='viewport' content='width=device-width, initial-scale=1.0')
-        link(rel='icon', type='image/x-icon', href='./assets/public/_favicon_')
-        link(rel='stylesheet', href='/vendor/beercss/beer.min.css')
-        link(rel='stylesheet', href='/vendor/material-icons/material-icons.css')
-        link(rel='stylesheet', href='./assets/public/css/roboto.css', type='text/css')
-        script(type='module', src='/vendor/beercss/beer.min.js')
-        style.
-            body { background: _bgColor_ !important; color: _textColor_ !important; }
-            article { background: _primLight_ !important; }
-            .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: _textColor_; }
-            .brand img { max-height: 50px; width: auto; }
-            .brand span { font: 5
+package-lock=false
+
 
 Related Files
 =============

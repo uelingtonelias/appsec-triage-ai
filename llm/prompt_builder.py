@@ -49,13 +49,13 @@ Finding Information
 ===================
 
 Rule ID:
-{finding.rule_id}
+{finding.scanner_rule_id}
 
 Severity:
 {finding.severity}
 
 Message:
-{finding.message}
+{finding.description}
 
 File:
 {finding.file_path}
@@ -124,7 +124,7 @@ Return ONLY valid JSON.
     ):
 
         rule_id = (
-            finding.rule_id or ""
+            finding.scanner_rule_id or ""
         ).lower()
 
         file_path = (

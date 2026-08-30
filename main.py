@@ -3,9 +3,11 @@ import argparse
 from parsers.semgrep_parser import SemgrepParser
 from agents.triage_agent import TriageAgent
 from tools.triage_ignore import TriageIgnore
+from output.defectdojo_api import DefectDojoApi
 
 
 SEPARATOR = "=" * 60
+
 
 CLASSIFICATIONS = {
     "True Positive": 0,
@@ -30,10 +32,25 @@ def main():
     )
 
     parser.add_argument(
-       "--limit",
+        "--limit",
         type=int,
         default=0,
-        help="Number of findings to process. Use 0 for all findings."
+        help=(
+            "Number of findings to process. "
+            "Use 0 for all findings."
+        )
+    )
+
+    parser.add_argument(
+        "--dojo-url"
+    )
+
+    parser.add_argument(
+        "--dojo-token"
+    )
+
+    parser.add_argument(
+        "--dojo-product"
     )
 
     args = parser.parse_args()
@@ -66,17 +83,17 @@ def main():
             ignored_count += 1
 
             ignored_rules[
-                finding.rule_id
+                finding.scanner_rule_id
             ] = (
                 ignored_rules.get(
-                    finding.rule_id,
+                    finding.scanner_rule_id,
                     0
                 ) + 1
             )
 
             print(
                 f"[INFO] Ignored: "
-                f"{finding.rule_id} | "
+                f"{finding.scanner_rule_id} | "
                 f"{finding.file_path}"
             )
 
@@ -93,7 +110,8 @@ def main():
         f"{ignored_count}"
     )
 
-    if args.limit is not None and args.limit > 0:
+    if args.limit > 0:
+
         findings = findings[:args.limit]
 
     print(
@@ -104,6 +122,46 @@ def main():
     agent = TriageAgent(
         args.repo
     )
+
+    dojo = None
+
+    dojo_test_id = None
+
+    if (
+        args.dojo_url
+        and args.dojo_token
+        and args.dojo_product
+    ):
+
+        dojo = DefectDojoApi(
+            url=args.dojo_url,
+            token=args.dojo_token
+        )
+
+        dojo_info = (
+            dojo.get_product_and_semgrep_test(
+                product_name=args.dojo_product
+            )
+        )
+
+        dojo_test_id = dojo_info[
+            "test_id"
+        ]
+
+        print(
+            f"[INFO] Product ID: "
+            f"{dojo_info['product_id']}"
+        )
+
+        print(
+            f"[INFO] Engagement ID: "
+            f"{dojo_info['engagement_id']}"
+        )
+
+        print(
+            f"[INFO] Semgrep Test ID: "
+            f"{dojo_info['test_id']}"
+        )
 
     total_prompt_tokens = 0
     total_response_tokens = 0
@@ -116,6 +174,8 @@ def main():
         CLASSIFICATIONS
     )
 
+    dojo_uploaded = 0
+
     for index, finding in enumerate(
         findings,
         start=1
@@ -123,36 +183,59 @@ def main():
 
         print("\n")
         print(SEPARATOR)
+
         print(
             f"[INFO] Processing finding "
             f"{index}/{len(findings)}"
         )
+
         print(SEPARATOR)
 
         response = agent.analyze(
             finding
         )
 
-        result = response["result"]
+        if not response:
+            continue
 
-        metrics = response["metrics"]
+        result = response.get(
+            "result",
+            {}
+        )
+
+        metrics = response.get(
+            "metrics",
+            {}
+        )
 
         processed += 1
 
         total_prompt_tokens += (
-            metrics["prompt_tokens"]
+            metrics.get(
+                "prompt_tokens",
+                0
+            )
         )
 
         total_response_tokens += (
-            metrics["response_tokens"]
+            metrics.get(
+                "response_tokens",
+                0
+            )
         )
 
         total_tokens += (
-            metrics["total_tokens"]
+            metrics.get(
+                "total_tokens",
+                0
+            )
         )
 
         total_seconds += (
-            metrics["elapsed_seconds"]
+            metrics.get(
+                "elapsed_seconds",
+                0
+            )
         )
 
         classification = result.get(
@@ -167,7 +250,56 @@ def main():
             ] += 1
 
         print("\n[RESULT]")
+
         print(result)
+
+                #
+        # Update Finding in DefectDojo
+        #
+        if dojo and dojo_test_id:
+
+            try:
+
+                updated = (
+                    dojo.append_ai_triage_review(
+                        test_id=dojo_test_id,
+                        rule_id=(
+                            finding.scanner_rule_id
+                        ),
+                        file_path=(
+                            finding.file_path
+                        ),
+                        line=getattr(
+                            finding,
+                            "start_line",
+                            0
+                        ),
+                        result=result
+                    )
+                )
+
+                if updated:
+
+                    dojo_uploaded += 1
+
+                    print(
+                        "[INFO] Finding updated "
+                        "in DefectDojo."
+                    )
+
+                else:
+
+                    print(
+                        "[INFO] Finding not found "
+                        "in DefectDojo."
+                    )
+
+            except Exception as ex:
+
+                print(
+                    f"[WARN] Failed to update "
+                    f"finding: {ex}"
+                )
 
     print("\n")
     print(SEPARATOR)
@@ -280,6 +412,20 @@ def main():
             print(
                 f"  {count:<5} {rule}"
             )
+
+    if dojo:
+
+        print("\nDEFECTDOJO")
+
+        print(
+            f"  Product         : "
+            f"{args.dojo_product}"
+        )
+
+        print(
+            f"  Findings Updated: "
+            f"{dojo_uploaded}"
+        )
 
     print("\nDONE")
 

@@ -13,6 +13,7 @@ __pycache__/
 
 last-prompt.txt
 last-response.txt
+last-context.txt
 
 # ====================================================
 # Virtual Environments
